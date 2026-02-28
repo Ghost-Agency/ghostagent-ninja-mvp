@@ -144,11 +144,11 @@ function AgentLaunchPanel() {
       updateLastLog({ status: 'ok', response: info });
       setChainInfo(info);
 
-      // Prefer Base by chainId 8453, then by name, then first available
-      const baseChain = info.chains?.find((c: any) => c.chainId === '8453' || c.chainId === 8453)
+      // SURGE uses internal chainId (e.g. "1" for Base). Match by networkId or chainName.
+      const baseChain = info.chains?.find((c: any) => c.networkId === '8453' || c.networkId === 8453)
         ?? info.chains?.find((c: any) => c.chainName === 'Base')
         ?? info.chains?.[0];
-      const resolvedChainId = String(baseChain?.chainId ?? '8453');
+      const resolvedChainId = String(baseChain?.chainId ?? '1');
 
       // ── Step 2: create wallet ──
       setLaunchStep('step-wallet');
