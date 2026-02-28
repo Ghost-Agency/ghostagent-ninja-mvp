@@ -105,7 +105,7 @@ function AgentLaunchPanel() {
     name: '$HOST',
     ticker: 'HOST',
     description: 'GhostAgent.ninja utility token. Stake to boost agent tier. Burn to mint. Earn from marketplace fees. Launched by a GhostAgent via A2A email instruction.',
-    ethAmount: '0.005',
+    ethAmount: '0',
     category: 'ai',
     websiteLink: 'https://ghostagent.ninja',
     xLink: 'https://x.com/ghostagent_ninja',
@@ -120,13 +120,13 @@ function AgentLaunchPanel() {
     setLogs(prev => prev.map((l, i) => i === prev.length - 1 ? { ...l, ...patch } : l));
   }
 
-  async function callSurge(action: string, extra: Record<string, any> = {}) {
+  async function callSurge(action: string, extra: Record<string, any> = {}): Promise<any> {
     const res = await fetch('/api/surge/launch', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action, apiKey, ...extra }),
     });
-    const data = await res.json();
+    const data = await res.json() as any;
     if (!res.ok) throw new Error(data?.error || `${action} failed (${res.status})`);
     return data;
   }
@@ -164,6 +164,12 @@ function AgentLaunchPanel() {
       updateLastLog({ status: 'ok', response: fund });
       setFundData(fund);
 
+      // Check balance — free funding covers gas only; clamp ethAmount to 0 if insufficient
+      const bal = await callSurge('check-balance', { walletId: wallet.walletId });
+      const baseBalance = bal.balances?.find((b: any) => b.chainId === '8453' || b.chain === 'Base');
+      const sufficient = baseBalance?.sufficient ?? false;
+      const safeEthAmount = sufficient ? form.ethAmount : '0';
+
       // ── Step 4: launch ──
       setLaunchStep('step-launch');
       const launchPayload = {
@@ -173,7 +179,7 @@ function AgentLaunchPanel() {
         description: form.description,
         logoUrl: HOST_LOGO,
         chainId: resolvedChainId,
-        ethAmount: form.ethAmount,
+        ethAmount: safeEthAmount,
         category: form.category,
         websiteLink: form.websiteLink,
         xLink: form.xLink,
@@ -264,6 +270,7 @@ function AgentLaunchPanel() {
                 className="w-full rounded-lg border border-[var(--border)] bg-black/30 px-3 py-2 text-xs outline-none"
                 style={{ color: '#f2eee5' }}
               />
+              <p className="text-[10px] text-[var(--muted)]">Set to <code>0</code> to launch with no initial buy (free SURGE wallet covers gas only).</p>
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-semibold tracking-wider text-[var(--muted)]">CATEGORY</label>
