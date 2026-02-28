@@ -164,11 +164,23 @@ function AgentLaunchPanel() {
       updateLastLog({ status: 'ok', response: fund });
       setFundData(fund);
 
-      // Check balance — free funding covers gas only; clamp ethAmount to 0 if insufficient
+      // Check balance — free funding only covers gas; use minBalance as floor for ethAmount
       const bal = await callSurge('check-balance', { walletId: wallet.walletId });
       const baseBalance = bal.balances?.find((b: any) => b.chainId === '8453' || b.chain === 'Base');
-      const sufficient = baseBalance?.sufficient ?? false;
-      const safeEthAmount = sufficient ? form.ethAmount : '0';
+      const minBalance = parseFloat(baseChain?.minBalance ?? '0.001');
+      const walletEth = parseFloat(baseBalance?.balance ?? '0');
+      // Use min of requested amount and what the wallet can afford (keeping some for gas)
+      const requestedEth = parseFloat(form.ethAmount) || 0.001;
+      const safeEthAmount = walletEth > minBalance
+        ? String(Math.min(requestedEth, walletEth - minBalance * 0.5).toFixed(6))
+        : String(minBalance.toFixed(6));
+      if (walletEth < minBalance) {
+        throw new Error(
+          `Wallet needs ${(minBalance - walletEth).toFixed(6)} more ETH on Base.\n` +
+          `Fund: ${wallet.address}\n` +
+          `Current: ${walletEth.toFixed(6)} ETH · Required: ${minBalance.toFixed(6)} ETH`
+        );
+      }
 
       // ── Step 4: launch ──
       setLaunchStep('step-launch');
