@@ -5,13 +5,16 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-[build.environment]
-  NEXT_USE_NETLIFY_EDGE = "true"
-
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+[functions]
+  included_files = ["app/api/surge/**"]
+
+[functions."api/surge/launch"]
+  timeout = 60
 
 [dev]
   command = "npm run dev"

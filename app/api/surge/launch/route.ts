@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+export const runtime = 'nodejs';
+export const maxDuration = 60;
+
 const SURGE_BASE = 'https://back.surge.xyz';
 
 function surgeHeaders(apiKey: string) {
