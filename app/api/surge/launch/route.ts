@@ -89,14 +89,14 @@ export async function POST(req: Request) {
         if (!body.walletId || !body.name || !body.ticker || !body.description || !body.logoUrl || !body.chainId) {
           return NextResponse.json({ error: 'walletId, name, ticker, description, logoUrl, chainId are required' }, { status: 400 });
         }
-        const payload: Record<string, string> = {
+        const payload: Record<string, any> = {
           name: body.name,
           ticker: body.ticker,
           description: body.description,
           logoUrl: body.logoUrl,
           chainId: body.chainId,
           walletId: body.walletId,
-          ethAmount: body.ethAmount || '0.005',
+          ethAmount: parseFloat(body.ethAmount || '0.0005'),
         };
         if (body.websiteLink) payload.websiteLink = body.websiteLink;
         if (body.githubLink) payload.githubLink = body.githubLink;
