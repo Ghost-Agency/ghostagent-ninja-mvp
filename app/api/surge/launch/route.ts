@@ -96,7 +96,7 @@ export async function POST(req: Request) {
           logoUrl: body.logoUrl,
           chainId: body.chainId,
           walletId: body.walletId,
-          ethAmount: parseFloat(body.ethAmount || '0.0005'),
+          ethAmount: body.ethAmount || '0.001',
         };
         if (body.websiteLink) payload.websiteLink = body.websiteLink;
         if (body.githubLink) payload.githubLink = body.githubLink;

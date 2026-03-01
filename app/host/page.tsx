@@ -105,7 +105,7 @@ function AgentLaunchPanel() {
     name: '$HOST',
     ticker: 'HOST',
     description: 'GhostAgent.ninja utility token. Stake to boost agent tier. Burn to mint. Earn from marketplace fees. Launched by a GhostAgent via A2A email instruction.',
-    ethAmount: '0',
+    ethAmount: '0.001',
     category: 'ai',
     websiteLink: 'https://ghostagent.ninja',
     xLink: 'https://x.com/ghostagent_ninja',
@@ -171,16 +171,15 @@ function AgentLaunchPanel() {
       const walletEth = parseFloat(baseBalance?.balance ?? '0');
       // Use min of requested amount and what the wallet can afford (keeping some for gas)
       const requestedEth = parseFloat(form.ethAmount) || 0.001;
-      const safeEthAmount = walletEth > minBalance
-        ? String(Math.min(requestedEth, walletEth - minBalance * 0.5).toFixed(6))
-        : String(minBalance.toFixed(6));
-      if (walletEth < minBalance) {
+      const totalNeeded = minBalance + requestedEth;
+      if (walletEth < totalNeeded) {
         throw new Error(
-          `Wallet needs ${(minBalance - walletEth).toFixed(6)} more ETH on Base.\n` +
+          `Wallet needs ${(totalNeeded - walletEth).toFixed(6)} more ETH on Base.\n` +
           `Fund: ${wallet.address}\n` +
-          `Current: ${walletEth.toFixed(6)} ETH · Required: ${minBalance.toFixed(6)} ETH`
+          `Have: ${walletEth.toFixed(6)} ETH · Need: ${totalNeeded.toFixed(6)} ETH (gas + buy)`
         );
       }
+      const safeEthAmount = String(requestedEth);
 
       // ── Step 4: launch — call SURGE directly from browser to avoid Netlify 30s timeout ──
       setLaunchStep('step-launch');
@@ -191,7 +190,7 @@ function AgentLaunchPanel() {
         description: form.description,
         logoUrl: HOST_LOGO,
         chainId: resolvedChainId,
-        ethAmount: parseFloat(safeEthAmount),
+        ethAmount: safeEthAmount,
         category: form.category,
         websiteLink: form.websiteLink,
         xLink: form.xLink,
