@@ -110,8 +110,8 @@ export async function POST(req: Request) {
         });
         const text = await res.text();
         let data: any;
-        try { data = JSON.parse(text); } catch { return NextResponse.json({ error: `launch returned non-JSON: ${text.slice(0, 200)}`, code: res.status }, { status: 502 }); }
-        if (!res.ok) return NextResponse.json({ error: data?.message || 'launch failed', code: res.status }, { status: res.status });
+        try { data = JSON.parse(text); } catch { return NextResponse.json({ error: `launch returned non-JSON: ${text.slice(0, 500)}`, httpStatus: res.status }, { status: 502 }); }
+        if (!res.ok) return NextResponse.json({ error: data?.message || data?.errorMessage || 'launch failed', surgeError: data, httpStatus: res.status, sentPayload: payload }, { status: res.status });
         return NextResponse.json(data);
       }
 
