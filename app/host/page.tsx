@@ -182,7 +182,7 @@ function AgentLaunchPanel() {
         );
       }
 
-      // ── Step 4: launch ──
+      // ── Step 4: launch — call SURGE directly from browser to avoid Netlify 30s timeout ──
       setLaunchStep('step-launch');
       const launchPayload = {
         walletId: wallet.walletId,
@@ -191,7 +191,7 @@ function AgentLaunchPanel() {
         description: form.description,
         logoUrl: HOST_LOGO,
         chainId: resolvedChainId,
-        ethAmount: safeEthAmount,
+        ethAmount: parseFloat(safeEthAmount),
         category: form.category,
         websiteLink: form.websiteLink,
         xLink: form.xLink,
@@ -202,7 +202,15 @@ function AgentLaunchPanel() {
         status: 'running',
         request: { ...launchPayload, 'X-API-Key': 'sk-surge-••••' },
       });
-      const launch = await callSurge('launch', launchPayload);
+      const surgeRes = await fetch('https://back.surge.xyz/openclaw/launch', {
+        method: 'POST',
+        headers: { 'X-API-Key': apiKey || (process.env.NEXT_PUBLIC_SURGE_API_KEY ?? ''), 'Content-Type': 'application/json' },
+        body: JSON.stringify(launchPayload),
+      });
+      const surgeText = await surgeRes.text();
+      let launch: any;
+      try { launch = JSON.parse(surgeText); } catch { throw new Error(`SURGE returned non-JSON: ${surgeText.slice(0, 200)}`); }
+      if (!surgeRes.ok) throw new Error(launch?.message || launch?.errorMessage || `launch failed (${surgeRes.status})`);
       updateLastLog({ status: 'ok', response: launch });
       setLaunchResult(launch);
       setLaunchStep('done');
