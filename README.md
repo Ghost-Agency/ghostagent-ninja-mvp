@@ -1,74 +1,38 @@
-# 🦾 GhostAgent: Sovereign AI Agents on Gnosis Chain
+# GhostAgent × 0G APAC Hackathon
 
-> Built for the Surge Hackathon 2024
+## Overview
+Sovereign agent infrastructure using 0G Storage for decentralized agent memory 
+and 0G Chain for on-chain provenance.
 
-GhostAgent is a framework for deploying sovereign AI agents on Gnosis Chain. Each agent gets:
-- 🔐 A Gnosis Safe for secure asset management
-- 📧 An `[agent]_@nftmail.box` email address
-- 🦾 An upgradeable ERC-6551 Token Bound Account
-- 🎭 Story Protocol IPA registration
+## 0G Integration
 
-## 🏗️ Architecture
+### Contracts (Newton Testnet)
+- **GhostAgentStorageLog**: `0x8378054ffFac40f795dbA039156535eb953b3356`
+- [View on Scan](https://scan-testnet.0g.ai/address/0x8378054ffFac40f795dbA039156535eb953b3356)
 
-### Core Components
-- **GhostRegistryV2**: Upgradeable registry that mints agent NFTs and manages their Safes
-- **MinimalERC6551Account**: Lightweight implementation focused on security and reliability
-- **Safe Module**: Enables automated Safe management through the registry
+### 0G Storage Usage
+- Agent beacon metadata persistence
+- Handshake certificates
+- Genome/SVG asset storage
+- Replaced centralized IPFS/Lighthouse
 
-### Key Features
-- ✨ One-click agent deployment via `register(name, safe)`
-- 🔄 Upgradeable account implementation via `updateImplementation()`
-- 🛡️ Safe-native security model
-- 📈 $SURGE reputation tracking (coming soon)
+### 0G Chain Usage  
+- On-chain state verification via `DataStored` events
+- Root hash logging for trustless agent config fetching
 
-## 🚀 Deployment
+### SpaceID .0g
+- `.0g` domain binding in Molt Protocol
+- ERC-6551 TBA identity bridge
 
-```bash
-# Install dependencies
-forge install
+## Tech Stack
+- React / Next.js
+- Solidity
+- 0G TS SDK
+- TypeScript
 
-# Deploy contracts
-forge script script/DeployMinimalERC6551Account.s.sol --rpc-url $GNOSIS_RPC --broadcast
-```
-
-## 🔗 Contract Addresses (Gnosis)
-
-- **GNS Registry**: `0x1993425f18AdE3A68A79E2E20a65684f885f6EAd`
-- **ERC-6551 Registry**: `0x000000006551c19487814612e58FE06813775758`
-- **Story Protocol IPA**: `0x773197595A8897db8419106308D222f063b11568`
-
-## 📚 Documentation
-
-### Creating an Agent
-1. Deploy a Gnosis Safe
-2. Call `register("name", safeAddress)` on GhostRegistryV2
-3. Your agent is now accessible at `name_@nftmail.box`
-
-### Security
-- All agent assets are secured by Gnosis Safe
-- Registry acts as a Safe module for automated management
-- Upgradeable implementation allows security patches
-
-## 🛠️ Development
-
-```bash
-# Copy example env
-cp env.example .env
-
-# Configure your environment
-vim .env
-
-# Run tests
-forge test
-```
-
-## 🏆 Hackathon Notes
-
-Built for the Surge Hackathon 2024, integrating:
-- ⚡ Gnosis Chain for sustainable infrastructure
-- 🛡️ Safe for institutional-grade security
-- 📜 Story Protocol for IP management
-- 💫 $SURGE for reputation tracking
+## Links
+- Demo: [Video URL]
+- Live: https://ghostagent.ninja
 
 ## 📄 License
 
